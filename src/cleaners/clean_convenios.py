@@ -5,6 +5,18 @@ def ler_dados(url: str) -> pd.DataFrame:
 
     return convenios_dataframe
 
+def remover_colunas(database: pd.DataFrame) -> pd.DataFrame:
+    colunas_para_remocao = [
+    "CÓDIGO SIAFI MUNICÍPIO", "NOME MUNICÍPIO", "NÚMERO ORIGINAL", "NÚMERO PROCESSO DO CONVÊNIO", "OBJETO DO CONVÊNIO", 
+    "CÓDIGO ÓRGÃO SUPERIOR", "CÓDIGO ÓRGÃO CONCEDENTE", "NOME ÓRGÃO CONCEDENTE", "CÓDIGO UG CONCEDENTE", "NOME UG CONCEDENTE", 
+    "CÓDIGO CONVENENTE", "TIPO CONVENENTE", "NOME CONVENENTE", "TIPO ENTE CONVENENTE", "TIPO INSTRUMENTO", "VALOR CONVÊNIO", 
+    "VALOR LIBERADO", "DATA PUBLICAÇÃO", "DATA INÍCIO VIGÊNCIA", "VALOR CONTRAPARTIDA", "VALOR ÚLTIMA LIBERAÇÃO", "T_INICIAL_deflac",
+    ]
+
+    database.drop(columns=colunas_para_remocao, inplace=True)
+
+    return database
+
 def formatar_nome_colunas(database: pd.DataFrame) -> pd.DataFrame:
     nomes_formatados = {
     'NÚMERO CONVÊNIO': 'numero_convenio',
