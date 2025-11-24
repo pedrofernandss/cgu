@@ -47,7 +47,15 @@ def padronizar_tipos(database: pd.DataFrame) -> pd.DataFrame:
     database['ano_instauracao_tce'] = database['ano_instauracao_tce'].astype('Int16')
 
     return database
+
+def padronizar_nome_ministerios(database: pd.DataFrame) -> pd.DataFrame:
+
+    database['ministerio'] = database['ministerio'].str.replace(r'^.*[-/]\s*', '', regex=True) # Remoção dos acrónimos e o traço/barra   
+    database['ministerio'] = database['ministerio'].str.strip() # Remoção de espaços extras no início/fim e normalizar
+    database['ministerio'] = database['ministerio'].str.replace(r'Ministérioda', 'Ministério da', regex=True)
+    database['ministerio'] = database['ministerio'].str.title() # Converção de tudo para a primeira letra maiúscula e o resto minúsculo
     
+    return database
 
 def limpar_database_convenios(url) -> pd.DataFrame:
     
@@ -62,7 +70,7 @@ if __name__ == "__main__":
     convenios_database_url = './database/raw/tces.parquet'
     local_salvamento = './database/clean/tces_clean.parquet'
 
-    convenios_limpo = limpar_database_convenios(convenios_database_url)    
+    convenios_limpo = limpar_d# Converção de tudo para a primeira letra maiúscula e o resto minúsculoatabase_convenios(convenios_database_url)    
     convenios_limpo.to_parquet(local_salvamento, index=False)
 
     print(f"Arquivo limpo salvo!")
