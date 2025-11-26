@@ -50,10 +50,21 @@ def padronizar_tipos(database: pd.DataFrame) -> pd.DataFrame:
 
 def padronizar_nome_ministerios(database: pd.DataFrame) -> pd.DataFrame:
 
+    relacao_nomes_ministerio = {
+        "Ministério Do Desenvolvimernto Agrário": "Ministério Do Desenvolvimento Agrário",
+        "Ministério Do Transportes": "Ministério Dos Transportes",
+        "Ministério Da Agricultura, Pecuária E Abastecimento": "Ministério Da Agricultura, Da Pecuária E Do Abastecimento",
+        "Ministério Do Planejamento E Orçamento E Gestão": "Ministério Do Planejamento, Orçamento E Gestão",
+        "Ministério Do Desenvolvimento Social E Combate A Fome": "Ministério Do Desenvolvimento Social E Combate À Fome",
+        "Ministério Da Ciência, Tec, Inov. E Com.": "Ministério Da Ciência, Tecnologia, Inovações E Comunicações",
+        "Ministério De Minas E Energia": "Ministério Das Minas E Energia"
+    }
+
     database['ministerio'] = database['ministerio'].str.replace(r'^.*[-/]\s*', '', regex=True) # Remoção dos acrónimos e o traço/barra   
     database['ministerio'] = database['ministerio'].str.strip() # Remoção de espaços extras no início/fim e normalizar
     database['ministerio'] = database['ministerio'].str.replace(r'Ministérioda', 'Ministério da', regex=True)
     database['ministerio'] = database['ministerio'].str.title() # Converção de tudo para a primeira letra maiúscula e o resto minúsculo
+    database['ministerio'] = database['ministerio'].replace(relacao_nomes_ministerio)
     
     return database
 
@@ -70,7 +81,7 @@ if __name__ == "__main__":
     convenios_database_url = './database/raw/tces.parquet'
     local_salvamento = './database/clean/tces_clean.parquet'
 
-    convenios_limpo = limpar_d# Converção de tudo para a primeira letra maiúscula e o resto minúsculoatabase_convenios(convenios_database_url)    
+    convenios_limpo = limpar_database_convenios(convenios_database_url)
     convenios_limpo.to_parquet(local_salvamento, index=False)
 
     print(f"Arquivo limpo salvo!")
