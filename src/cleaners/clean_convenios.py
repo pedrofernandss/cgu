@@ -26,7 +26,7 @@ def formatar_nome_colunas(database: pd.DataFrame) -> pd.DataFrame:
 
 def extrair_ano(database: pd.DataFrame) -> pd.DataFrame:
     database["data_final_vigencia_convenio"] = pd.to_datetime(database["data_final_vigencia_convenio"], dayfirst=True)
-    database["ano_final_vigencia_convenio"] = pd.DatetimeIndex(database["data_final_vigencia_convenio"]).year
+    database["ano_referencia"] = pd.DatetimeIndex(database["data_final_vigencia_convenio"]).year
 
     return database
 
