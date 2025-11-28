@@ -25,11 +25,11 @@ def remover_colunas(database: pd.DataFrame) -> pd.DataFrame:
 
 def formatar_nome_colunas(database: pd.DataFrame) -> pd.DataFrame:
     nomes_formatados = {
-    'Ano da instauração do processo pela CGU': 'ano_referencia',
+    'Ano da instauração do processo pela CGU': 'ano_instauracao_processo_cgu',
     'UF.x': 'unidade_federativa',
     'name_region': 'regiao',
     'Ministério': 'ministerio',
-    'ano_provavel_contrato': 'ano_contrato',
+    'ano_provavel_contrato': 'ano_referencia',
     'Motivo da Instauração da TCE': 'motivo_instauracao_tce',
     "Função Programática": "funcao_programatica"
     }
@@ -44,7 +44,7 @@ def padronizar_tipos(database: pd.DataFrame) -> pd.DataFrame:
     database['regiao'] = database['regiao'].astype('category')
     database['unidade_federativa'] = database['unidade_federativa'].astype('category')
     database['motivo_instauracao_tce'] = database['motivo_instauracao_tce'].astype('category')
-    database['ano_contrato'] = database['ano_contrato'].astype('Int16')
+    database['ano_instauracao_processo_cgu'] = database['ano_instauracao_processo_cgu'].astype('Int16')
     database['ano_referencia'] = database['ano_referencia'].astype('Int16')
 
     return database
