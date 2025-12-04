@@ -30,3 +30,9 @@ tces_motivo.columns = [
     f'qntd_motivo_instauracao_{m.upper().replace("Ã", "A").replace("Ç", "C").replace(" ", "_")}_{r.lower()}'
     for m, r in tces_motivo.columns
 ]
+
+tces_alinhamento = pd.crosstab(index=[tces_dataframe['ano_referencia'], tces_dataframe['ministerio']],
+                               columns=[tces_dataframe['alinhamento_tce']])
+
+alinhamento = {0: 'NAO_ALINHADO', 1: 'ALINHADO'}
+tces_alinhamento.columns = [f'qntd_tces_{alinhamento.get(col, col)}' for col in tces_alinhamento.columns]
