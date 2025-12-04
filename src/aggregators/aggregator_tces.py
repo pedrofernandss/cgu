@@ -1,6 +1,6 @@
 import pandas as pd
 
-# Agrupar motivo da Instauração da TCE por região
+# Agrupar motivo da Instauração da TCE por região /OK
 # N° total de TCE's em municipios alinhados e não alinhados (coluna alinhamento_tce)
 
 def agregar_motivos_tce(motivo: str) -> str:
@@ -21,4 +21,12 @@ def agregar_motivos_tce(motivo: str) -> str:
 url = './database/clean/tces_clean.parquet'
 tces_dataframe = pd.read_parquet(url)
 
-tces_dataframe['motivo_instauracao_tce'] = tces_dataframe['motivo_instauracao_tce'].apply(agregar_motivos_tce) 
+tces_dataframe['motivo_instauracao_tce'] = tces_dataframe['motivo_instauracao_tce'].apply(agregar_motivos_tce)
+
+tces_motivo = pd.crosstab(index=[tces_dataframe['ano_referencia'], tces_dataframe['ministerio']],
+                          columns=[tces_dataframe['motivo_instauracao_tce'], tces_dataframe['regiao']])
+
+tces_motivo.columns = [
+    f'qntd_motivo_instauracao_{m.upper().replace("Ã", "A").replace("Ç", "C").replace(" ", "_")}_{r.lower()}'
+    for m, r in tces_motivo.columns
+]
