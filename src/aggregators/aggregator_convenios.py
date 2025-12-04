@@ -45,3 +45,16 @@ def agrupar_situacao_convenio(dataframe: pd.DataFrame):
     ]
 
     return convenios_pivot_situacao
+
+def agrupar_alinhamento(dataframe: pd.DataFrame):
+
+    convenios_pivot_alinhamento = pd.crosstab(
+        index=[dataframe['ministerio'],dataframe['ano_referencia']],
+        columns=dataframe['alinhamento_gov']
+    )
+
+    # Renomeando colunas de alinhamento
+    mapa_alinhamento = {0: 'nao_alinhado', 1: 'alinhado'}
+    convenios_pivot_alinhamento.columns = [f'qntd_convenios_{mapa_alinhamento.get(col, col)}' for col in convenios_pivot_alinhamento.columns]
+
+    return convenios_pivot_alinhamento
