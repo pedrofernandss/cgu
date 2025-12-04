@@ -1,7 +1,10 @@
 import pandas as pd
 
-# Agrupar motivo da Instauração da TCE por região /OK
-# N° total de TCE's em municipios alinhados e não alinhados (coluna alinhamento_tce)
+def ler_dados(url: str) -> pd.DataFrame:
+    tces_dataframe = pd.read_parquet(url)
+
+    return tces_dataframe
+
 
 def agregar_motivos_tce(motivo: str) -> str:
     
@@ -18,21 +21,44 @@ def agregar_motivos_tce(motivo: str) -> str:
 
     return 'Outra irregularidade'
 
-url = './database/clean/tces_clean.parquet'
-tces_dataframe = pd.read_parquet(url)
+def agregar_motivos_instauracao_por_regiao(dataframe: pd.DataFrame):
+    tces_motivo_regiao = pd.crosstab(index=[dataframe['ministerio'], dataframe['ano_referencia']],
+                            columns=[dataframe['motivo_instauracao_tce'], dataframe['regiao']])
 
-tces_dataframe['motivo_instauracao_tce'] = tces_dataframe['motivo_instauracao_tce'].apply(agregar_motivos_tce)
+    tces_motivo_regiao.columns = [
+        f'qntd_motivo_instauracao_{m.lower().replace("Ã", "A").replace("Ç", "C").replace(" ", "_")}_{r.lower()}'
+        for m, r in tces_motivo_regiao.columns
+    ]
 
-tces_motivo = pd.crosstab(index=[tces_dataframe['ano_referencia'], tces_dataframe['ministerio']],
-                          columns=[tces_dataframe['motivo_instauracao_tce'], tces_dataframe['regiao']])
+    return tces_motivo_regiao
 
-tces_motivo.columns = [
-    f'qntd_motivo_instauracao_{m.upper().replace("Ã", "A").replace("Ç", "C").replace(" ", "_")}_{r.lower()}'
-    for m, r in tces_motivo.columns
-]
+def agregar_tces_por_alinhamento(dataframe: pd.DataFrame):
+    tces_alinhamento = pd.crosstab(index=[dataframe['ministerio'], dataframe['ano_referencia']],
+                                columns=[dataframe['alinhamento_tce']])
 
-tces_alinhamento = pd.crosstab(index=[tces_dataframe['ano_referencia'], tces_dataframe['ministerio']],
-                               columns=[tces_dataframe['alinhamento_tce']])
+    alinhamento = {0: 'nao_alinhado', 1: 'alinhado'}
+    tces_alinhamento.columns = [f'qntd_tces_{alinhamento.get(col, col)}' for col in tces_alinhamento.columns]
 
-alinhamento = {0: 'NAO_ALINHADO', 1: 'ALINHADO'}
-tces_alinhamento.columns = [f'qntd_tces_{alinhamento.get(col, col)}' for col in tces_alinhamento.columns]
+    return tces_alinhamento
+
+
+def agregar_base_tces(url: str) -> pd.DataFrame:
+    df_tces = ler_dados(url)
+
+    df_tces['motivo_instauracao_tce'] = df_tces['motivo_instauracao_tce'].apply(agregar_motivos_tce)
+    df_tces_agg_regiao = agregar_motivos_instauracao_por_regiao(df_tces)
+    df_tces_agg_alinhamento = agregar_tces_por_alinhamento(df_tces)
+
+    tces_final = pd.concat([df_tces_agg_regiao, df_tces_agg_alinhamento], axis=1)
+    tces_final = tces_final.reset_index()
+
+    return tces_final
+
+if __name__ == "__main__":
+    tces_database_url = './database/clean/tces_clean.parquet'
+    local_salvamento = './database/aggregated/tces_aggregated.parquet'
+
+    tces_agregado = agregar_base_tces(tces_database_url)
+    tces_agregado.to_parquet(local_salvamento, index=False)
+
+    print(f"Base de dados agregada!")
